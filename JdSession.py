@@ -19,10 +19,6 @@ elif __file__:
 
 
 class Session(object):
-    """
-    京东买手
-    """
-
     # 初始化
     def __init__(self):
         self.userAgent = DEFAULT_USER_AGENT
@@ -38,7 +34,7 @@ class Session(object):
         except Exception:
             pass
 
-    ############## 登录相关 #############
+    # ############# 登录相关 #############
     # 保存 cookie
     def saveCookies(self):
         cookiesFile = os.path.join(
@@ -146,7 +142,7 @@ class Session(object):
         else:
             return False
 
-    ############## 商品方法 #############
+    # ############# 商品方法 #############
     # 获取商品详情信息
     def getItemDetail(self, skuId, skuNum=1, areaId=1):
         """ 查询商品详情
@@ -176,7 +172,7 @@ class Session(object):
             detail['endTime'] = resp['miaoshaInfo']['endTime']
         self.itemDetails[skuId] = detail
 
-    ############## 库存方法 #############
+    # ############# 库存方法 #############
     def getItemStock(self, skuId, skuNum, areaId):
         """获取单个商品库存状态
         :param skuId: 商品id
@@ -187,8 +183,7 @@ class Session(object):
         resp = self.getItemDetail(skuId, skuNum, areaId).json()
         return 'stockInfo' in resp and resp['stockInfo']['isStock']
 
-    ############## 购物车相关 #############
-
+    # ############# 购物车相关 #############
     def uncheckCartAll(self):
         """ 取消所有选中商品
         return 购物车信息
@@ -232,7 +227,8 @@ class Session(object):
         data = {
             'functionId': 'pcCart_jc_cartAdd',
             'appid': 'JDC_mall_cart',
-            'body': '{\"operations\":[{\"carttype\":1,\"TheSkus\":[{\"Id\":\"' + skuId + '\",\"num\":' + str(skuNum) + '}]}]}',
+            'body': '{\"operations\":[{\"carttype\":1,\"TheSkus\":[{\"Id\":\"' + skuId + '\",\"num\":' + str(
+                skuNum) + '}]}]}',
             'loginType': 3
         }
 
@@ -256,8 +252,8 @@ class Session(object):
             'referer': 'https://cart.jd.com'
         }
 
-        body = '{\"operations\":[{\"TheSkus\":[{\"Id\":\"'+skuId+'\",\"num\":'+str(
-            skuNum)+',\"skuUuid\":\"'+skuUid+'\",\"useUuid\":false}]}],\"serInfo\":{\"area\":\"'+areaId+'\"}}'
+        body = '{\"operations\":[{\"TheSkus\":[{\"Id\":\"' + skuId + '\",\"num\":' + str(
+            skuNum) + ',\"skuUuid\":\"' + skuUid + '\",\"useUuid\":false}]}],\"serInfo\":{\"area\":\"' + areaId + '\"}}'
         data = {
             'functionId': 'pcCart_jc_changeSkuNum',
             'appid': 'JDC_mall_cart',
@@ -302,7 +298,7 @@ class Session(object):
         # 不在购物车中
         return self.addCartSku(skuId, skuNum)
 
-    ############## 订单相关 #############
+    # ############# 订单相关 #############
 
     def trySubmitOrder(self, skuId, skuNum, areaId, retry=3, interval=5):
         """提交订单
@@ -369,9 +365,9 @@ class Session(object):
                 # remove '寄送至： ' from the begin
                 'address': html.xpath("//span[@id='sendAddr']")[0].text[5:],
                 # remove '收件人:' from the begin
-                'receiver':  html.xpath("//span[@id='sendMobile']")[0].text[4:],
+                'receiver': html.xpath("//span[@id='sendMobile']")[0].text[4:],
                 # remove '￥' from the begin
-                'total_price':  html.xpath("//span[@id='sumPayPriceId']")[0].text[1:],
+                'total_price': html.xpath("//span[@id='sumPayPriceId']")[0].text[1:],
                 'items': []
             }
             return order_detail
@@ -407,7 +403,7 @@ class Session(object):
                 # remove '寄送至： ' from the begin
                 'address': html.xpath("//span[@class='addr-info']")[0].text,
                 # remove '收件人:' from the begin
-                'receiver':  html.xpath("//span[@class='addr-name']")[0].text,
+                'receiver': html.xpath("//span[@class='addr-name']")[0].text,
             }
             return order_detail
         except Exception as e:
@@ -537,7 +533,6 @@ class Session(object):
 
 
 if __name__ == '__main__':
-
     skuId = '100015253059'
     areaId = '1_2901_55554_0'
     skuNum = 1

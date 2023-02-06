@@ -14,10 +14,6 @@ from utils import (
 
 
 class Buyer(object):
-    """
-    京东买手
-    """
-
     # 初始化
     def __init__(self):
         self.session = Session()
@@ -25,7 +21,7 @@ class Buyer(object):
         self.enableWx = global_config.getboolean('messenger', 'enable')
         self.scKey = global_config.get('messenger', 'sckey')
 
-    ############## 登录相关 #############
+    # ############# 登录相关 #############
     # 二维码登录
     def loginByQrCode(self):
         if self.session.isLogin:
@@ -61,7 +57,7 @@ class Buyer(object):
         self.session.isLogin = True
         self.session.saveCookies()
 
-    ############## 外部方法 #############
+    # ############# 外部方法 #############
     def buyItemInStock(self, skuId, areaId, skuNum=1, stockInterval=3, submitRetry=3, submitInterval=5,
                        buyTime='2022-08-06 00:00:00'):
         """根据库存自动下单商品

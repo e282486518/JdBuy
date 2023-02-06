@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
 
 from timer import Timer
 from JdSession import Session
+from log import logger
 
 NUM_LABEL_FORMAT = '商品购买数量[{0}]个'
 STOCK_LABEL_FORMAT = '库存查询间隔[{0}]秒'
@@ -218,8 +219,6 @@ class JdBuyerUI(QWidget):
         self.stockLabel.setText(STOCK_LABEL_FORMAT.format(stock))
 
 # 登录监控线程
-
-
 class TicketThread(QThread):
     """ check ticket
     """
@@ -259,8 +258,6 @@ class TicketThread(QThread):
         self.session.saveCookies()
 
 # 商品监控线程
-
-
 class BuyerThread(QThread):
 
     infoSignal = Signal(str)
@@ -290,6 +287,7 @@ class BuyerThread(QThread):
         timer.start()
 
         while True:
+            logger.info('JdBuyerApp:商品监控线程循环监视中...')
             if self._isPause:
                 self.infoSignal.emit('{0} 已取消下单'.format(
                     time.strftime(DATA_FORMAT, time.localtime())))
@@ -313,7 +311,6 @@ class BuyerThread(QThread):
 
 
 def main():
-
     app = QApplication(sys.argv)
     ui = JdBuyerUI()
     sys.exit(app.exec())
