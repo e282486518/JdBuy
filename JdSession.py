@@ -8,6 +8,7 @@ import time
 import requests
 
 from lxml import etree
+from log import logger
 
 DEFAULT_TIMEOUT = 10
 DEFAULT_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
@@ -65,8 +66,7 @@ class Session(object):
             'rid': str(int(time.time() * 1000)),
         }
         try:
-            resp = self.sess.get(url=url, params=payload,
-                                 allow_redirects=False)
+            resp = self.sess.get(url=url, params=payload, allow_redirects=False)
             if self.respStatus(resp):
                 return True
         except Exception as e:
@@ -144,7 +144,7 @@ class Session(object):
 
     # ############# 商品方法 #############
     # 获取商品详情信息
-    def getItemDetail(self, skuId, skuNum=1, areaId=1):
+    def getItemDetail(self, skuId, skuNum=1, areaId='1'):
         """ 查询商品详情
         :param skuId
         :return 商品信息（下单模式、库存）
@@ -166,8 +166,10 @@ class Session(object):
         shopId = resp['shopInfo']['shop']['shopId']
         detail = dict(venderId=shopId)
         if 'YuShouInfo' in resp:
+            logger.info(f'{skuId} 为[预售]商品')
             detail['yushouUrl'] = resp['YuShouInfo']['url']
         if 'miaoshaInfo' in resp:
+            logger.info(f'{skuId} 为[秒杀]商品')
             detail['startTime'] = resp['miaoshaInfo']['startTime']
             detail['endTime'] = resp['miaoshaInfo']['endTime']
         self.itemDetails[skuId] = detail
@@ -176,8 +178,8 @@ class Session(object):
     def getItemStock(self, skuId, skuNum, areaId):
         """获取单个商品库存状态
         :param skuId: 商品id
-        :param num: 商品数量
-        :param areadId: 地区id
+        :param skuNum: 商品数量
+        :param areaId: 地区id
         :return: 商品是否有货 True/False
         """
         resp = self.getItemDetail(skuId, skuNum, areaId).json()
@@ -299,7 +301,6 @@ class Session(object):
         return self.addCartSku(skuId, skuNum)
 
     # ############# 订单相关 #############
-
     def trySubmitOrder(self, skuId, skuNum, areaId, retry=3, interval=5):
         """提交订单
         :return: 订单提交结果 True/False
@@ -318,6 +319,7 @@ class Session(object):
             if ret:
                 return True
             else:
+                logger.info(msg)
                 time.sleep(interval)
         return False
 
@@ -333,6 +335,7 @@ class Session(object):
             if sumbmitSuccess:
                 return True
             else:
+                logger.info(f'msg')
                 if i < retry:
                     time.sleep(interval)
         return False
@@ -533,9 +536,11 @@ class Session(object):
 
 
 if __name__ == '__main__':
-    skuId = '100015253059'
-    areaId = '1_2901_55554_0'
+    skuId = '10056121895406'
+    areaId = '19_1607_3639'
     skuNum = 1
 
     session = Session()
-    print(session.getItemDetail(skuId, skuNum, areaId).text)
+    # print(session.getItemDetail(skuId, skuNum, areaId).text)
+    session.fetchItemDetail(skuId)
+    print(json.dumps(session.itemDetails))

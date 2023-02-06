@@ -76,7 +76,7 @@ class Buyer(object):
         while True:
             try:
                 if not self.session.getItemStock(skuId, skuNum, areaId):
-                    logger.info('不满足下单条件，{0}s后进行下一次查询'.format(stockInterval))
+                    logger.info('不满足下单条件[无库存]，{0}s后进行下一次查询'.format(stockInterval))
                 else:
                     logger.info('{0} 满足下单条件，开始执行'.format(skuId))
                     if self.session.trySubmitOrder(skuId, skuNum, areaId, submitRetry, submitInterval):
@@ -92,9 +92,9 @@ class Buyer(object):
 
 if __name__ == '__main__':
     # 商品sku
-    skuId = '100015253059'
+    skuId = '10056121895406'
     # 区域id(可根据工程 area_id 目录查找)
-    areaId = '1_2901_55554_0'
+    areaId = '19_1607_3639'
     # 购买数量
     skuNum = 1
     # 库存查询间隔(秒)
